@@ -7,8 +7,6 @@
     
  <link rel="stylesheet" href="css/bootstrap.min.css">
     
-    
-    
     <!-- 3. Tus estilos personalizados (Siempre al final del head) -->
     <link rel="stylesheet" href="styles.css">
 </head>
