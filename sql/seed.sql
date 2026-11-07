@@ -1,14 +1,19 @@
--- se registra el rol de los usuarios
 
+-- Se registran los roles
 INSERT INTO roles (id, nombre) VALUES
 (1, 'administrador'),
 (2, 'operador');
 
 
+-- Se registran las categorias iniciales
+INSERT INTO categorias (nombre, dias_max_prestamo) VALUES
+('Computadoras', 7),
+('Proyectores', 5),
+('Camaras', 3);
 
--- se registra el admi
---contra Admin123
 
+-- Se registra el admini
+-- Contrasena  Admin123
 INSERT INTO usuarios (
     rol_id,
     nombre,
@@ -19,23 +24,25 @@ INSERT INTO usuarios (
     1,
     'Administrador SIGEL',
     'admin@sigel.com',
-    '$2y$10$MED1/YcYMOdM9zfZdPah1eU.Yixj0HzzsWSuXeFw/NM7y4T7DQrtC',
+    '$2y$10$.D3Jbuy7e0rL.oH2v98Z1uRC3HMxqmP3/typchyv28AUR8ak0Nz72',
     1
 );
 
--- se registra el ope
--- contra Operador123
 
+-- Se registra el operador
+-- Contrasena  Operador123
 INSERT INTO usuarios (
     rol_id,
     nombre,
     correo,
     password_hash,
-    activo
+    activo,
+    categoria_id
 ) VALUES (
     2,
     'Operador SIGEL',
     'operador@sigel.com',
-    '$2y$10$J5IR9Xo/SfV4hJHQL.diaeEYECXpxx/1ZIAjV8ZpZW8xjTSUkPmKG',
-    1
+    '$2y$10$BokTwxAEL1kjseOYnYGQTuHDCYhWWAkxGIvBD/QTBdKHAGg91FPWa',
+    1,
+    (SELECT id FROM categorias WHERE nombre = 'Computadoras')
 );

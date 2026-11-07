@@ -4,7 +4,7 @@ $tipo_bd = "mysql";
 $host_bd = "localhost";
 $user = "root";
 $pass = "";
-$db_name = ""; 
+$db_name = "sigel"; 
 
 try {
     // agrego todo en la cadena dsn
