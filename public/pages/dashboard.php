@@ -1,3 +1,13 @@
+
+<?php
+session_start();
+
+if (!isset($_SESSION['usuario_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,9 +30,25 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav ms-auto">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
-          <a class="nav-link" href="#">Usuarios</a>
+          <?php if ($_SESSION['rol_id'] == 1): ?>
+
+            <a class="nav-link" href="usuarios.php">Usuarios</a>
+
+          <?php endif; ?>
+
+          <?php if ($_SESSION['rol_id'] == 1): ?>
+
+            <a class="nav-link" href="categorias.php">Categorías</a>
+
+          <?php endif; ?>
           <a class="nav-link" href="#">Equipos</a>
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          
+          <form action="../actions/logout.php" method="POST">
+              <button type="submit" class="btn btn-outline-danger">
+                  Cerrar sesión
+              </button>
+          </form>
+          
         </div>
       </div>
     </div>

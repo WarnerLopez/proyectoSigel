@@ -7,9 +7,10 @@ if($_SERVER["REQUEST_METHOD"]=="POST"){
     $correo = $_POST['mail'] ?? '';
     $pass = $_POST['password'] ?? '';
 
-    if (empty($correo) || empty($pass)) {
-        echo "Debe completar ambos campos";
-        exit;
+if (empty($correo) || empty($pass)) {
+    $_SESSION['error_login'] = "datos invalidos";
+    header('Location: ../index.php');
+    exit;
 }
 $consulta = $conexion->prepare(
     "SELECT id, nombre, correo, password_hash, rol_id, categoria_id
@@ -24,38 +25,32 @@ $usuario = $consulta->fetch(PDO::FETCH_ASSOC);
 
 if($usuario){
     if (password_verify($pass, $usuario['password_hash'])) {
-    echo "Contraseña correcta";
+    
     // regenera la secion para evitar que se roben la secion
      session_regenerate_id(true);
 
     $_SESSION['usuario_id'] = $usuario['id'];
     $_SESSION['rol_id'] = $usuario['rol_id'];
     $_SESSION['categoria_id'] = $usuario['categoria_id'];
-    header('Location: ../pages/menu.php');
+    header('Location: ../pages/dashboard.php');
     exit;
 
 } else {
-    echo "correo o contraseña no son validas";
+    $_SESSION['error_login'] = "Correo o contraseña incorrectos";
+    header('Location: ../index.php');
+    exit;
 }
 
 }else{
-    echo"correo o contraseña no son validas";
+     $_SESSION['error_login'] = "Correo o contraseña incorrectos";
+    header('Location: ../index.php');
+    exit;
 
 }
 
 
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 ?>

@@ -1,3 +1,10 @@
+<?php
+session_start();
+
+$error = $_SESSION['error_login'] ?? '';
+unset($_SESSION['error_login']);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,6 +25,12 @@
             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" class="img-fluid" alt="Sample image">
           </div>
           <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+
+            <?php if (!empty($error)): ?>
+              <div class="alert alert-danger" role="alert">
+                <?= htmlspecialchars($error) ?>
+              </div>
+            <?php endif; ?>
             <form action="actions/login.php" method="POST">
              
 
