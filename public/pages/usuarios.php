@@ -10,27 +10,60 @@ if (!isset($_SESSION['rol_id']) || $_SESSION['rol_id'] != 1) {
     http_response_code(403);
     exit('Acceso denegado');
 }
+
 require_once __DIR__ . '/../../config/database.php';
 
-$consulta = $conexion->prepare(
-    "SELECT
-        u.id,
-        u.nombre,
-        u.correo,
-        r.nombre AS rol,
-        u.activo
-     FROM usuarios AS u
-     INNER JOIN roles AS r
-        ON u.rol_id = r.id
-     WHERE u.eliminado = 0"
-);
+$buscar = trim($_GET['buscar'] ?? '');
+
+$porPagina = 5;
+$pagina = max(1, (int) ($_GET['pagina'] ?? 1));
+$offset = ($pagina - 1) * $porPagina;
+
+$sql = "SELECT
+            u.id,
+            u.nombre,
+            u.correo,
+            r.nombre AS rol,
+            u.activo
+        FROM usuarios AS u
+        INNER JOIN roles AS r
+            ON u.rol_id = r.id
+        WHERE u.eliminado = 0
+          AND (u.nombre LIKE :buscar_nombre
+               OR u.correo LIKE :buscar_correo)
+               ORDER BY u.id ASC
+        LIMIT :limite OFFSET :offset";
+
+$consulta = $conexion->prepare($sql);
+
+$consulta->bindValue(':buscar_nombre', '%' . $buscar . '%', PDO::PARAM_STR);
+$consulta->bindValue(':buscar_correo', '%' . $buscar . '%', PDO::PARAM_STR);
+
+$consulta->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+$consulta->bindValue(':offset', $offset, PDO::PARAM_INT);
 
 $consulta->execute();
 
 $usuarios = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
+$sqlTotal = "SELECT COUNT(*)
+             FROM usuarios
+             WHERE eliminado = 0
+             AND (nombre LIKE :buscar_nombre
+                  OR correo LIKE :buscar_correo)";
 
+$consultaTotal = $conexion->prepare($sqlTotal);
+
+$consultaTotal->execute([
+    'buscar_nombre' => '%' . $buscar . '%',
+    'buscar_correo' => '%' . $buscar . '%'
+]);
+
+$totalUsuarios = (int) $consultaTotal->fetchColumn();
+
+$totalPaginas = (int) ceil($totalUsuarios / $porPagina);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -42,6 +75,13 @@ $usuarios = $consulta->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container text-center">
+        <form method="GET" action="usuarios.php">
+    <input type="text" name="buscar" placeholder="Buscar usuario">
+
+    <button type="submit">
+        Buscar
+    </button>
+</form>
     <table class="table table-striped">
        <thead>
         <tr>
@@ -74,6 +114,23 @@ $usuarios = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
          </tbody>
     </table>
+
+    <nav aria-label="Paginación de usuarios">
+    <ul class="pagination justify-content-center">
+
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+
+            <li class="page-item <?= $i == $pagina ? 'active' : '' ?>">
+                <a class="page-link"
+                   href="?buscar=<?= urlencode($buscar) ?>&pagina=<?= $i ?>">
+                    <?= $i ?>
+                </a>
+            </li>
+
+        <?php endfor; ?>
+
+    </ul>
+</nav>
 
 </div>
 
