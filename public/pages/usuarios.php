@@ -10,6 +10,9 @@ if (!isset($_SESSION['rol_id']) || $_SESSION['rol_id'] != 1) {
     http_response_code(403);
     exit('Acceso denegado');
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -111,6 +114,24 @@ $totalPaginas = (int) ceil($totalUsuarios / $porPagina);
             </td>
             <td>
             <a href="editar_usuario.php?id=<?= (int) $usuario['id'] ?>" class="btn btn-warning btn-sm"> Editar </a>
+            <form action="../actions/eliminar_usuario.php"
+                method="POST"
+                class="d-inline"
+                onsubmit="return confirm('¿Está seguro de eliminar este usuario?');">
+
+                <input type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
+                <input type="hidden"
+                    name="id"
+                    value="<?= (int) $usuario['id'] ?>">
+
+                <button type="submit" class="btn btn-danger btn-sm">
+                    Eliminar
+                </button>
+
+            </form>
 </td>
         </tr>
     <?php endforeach; ?>
