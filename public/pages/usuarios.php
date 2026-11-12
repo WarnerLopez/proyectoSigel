@@ -90,7 +90,7 @@ $totalPaginas = (int) ceil($totalUsuarios / $porPagina);
             <th>CORREO</th>
             <th>ROL</th>
             <th>ESTADO</th>
-
+            <th>Acciones</th>
         </tr>
     </thead>
      <tbody>
@@ -109,6 +109,9 @@ $totalPaginas = (int) ceil($totalUsuarios / $porPagina);
                 }
             ?>
             </td>
+            <td>
+            <a href="editar_usuario.php?id=<?= (int) $usuario['id'] ?>" class="btn btn-warning btn-sm"> Editar </a>
+</td>
         </tr>
     <?php endforeach; ?>
 
