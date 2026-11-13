@@ -154,6 +154,9 @@ $totalPaginas = (int) ceil($totalUsuarios / $porPagina);
         <?php endfor; ?>
 
     </ul>
+    <a href="dashboard.php" class="btn btn-secondary">
+        Volver
+    </a>
 </nav>
 
 </div>
