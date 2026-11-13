@@ -97,6 +97,10 @@ $categorias = $consulta->fetchAll(PDO::FETCH_ASSOC);
 <div class="container py-5">
 
     <h2 class="mb-4">Gestión de Categorías</h2>
+
+    <a href="crear_categoria.php" class="btn btn-success mb-3">
+        Crear Categoría
+    </a>
     
     <form method="GET" action="categorias.php" class="mb-4">
 
@@ -128,6 +132,7 @@ $categorias = $consulta->fetchAll(PDO::FETCH_ASSOC);
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Días máximos de préstamo</th>
+                <th>Acciones</th>
             </tr>
         </thead>
 
@@ -142,6 +147,12 @@ $categorias = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
                     <td>
                         <?= (int) $categoria['dias_max_prestamo'] ?>
+                    </td>
+                     <td>
+                        <a
+                            href="editar_categoria.php?id=<?= (int) $categoria['id'] ?>"
+                            class="btn btn-warning btn-sm">Editar
+                        </a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -166,6 +177,7 @@ $categorias = $consulta->fetchAll(PDO::FETCH_ASSOC);
                 <?php endfor; ?>
 
             </ul>
+            
         </nav>
     <?php endif; ?>
         
