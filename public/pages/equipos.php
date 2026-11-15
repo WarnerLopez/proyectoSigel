@@ -2,7 +2,6 @@
 <?php
 session_start();
 
-// Verificar que el usuario inició sesión
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
     exit;
@@ -11,21 +10,19 @@ if (!isset($_SESSION['usuario_id'])) {
 require_once __DIR__ . '/../../config/database.php';
 
 
-
-
 $buscar = trim($_GET['buscar'] ?? '');
 
-// Cantidad de equipos por página
+// muetra la cantidad de equipos por pagina
 $porPagina = 5;
 
-// Obtener el número de página
+// Obtener el numero de pagina
 $pagina = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT);
 
 if (!$pagina || $pagina < 1) {
     $pagina = 1;
 }
 
-// Contar los equipos que coinciden con la búsqueda
+// buscar equipos
 $consultaTotal = $conexion->prepare(
     "SELECT COUNT(*)
      FROM equipos
@@ -43,18 +40,18 @@ $consultaTotal->execute([
 
 $totalEquipos = (int) $consultaTotal->fetchColumn();
 
-// Calcular el número total de páginas
+// Calcular el numero total de paginas
 $totalPaginas = (int) ceil($totalEquipos / $porPagina);
 
-// Evitar páginas mayores al total
+// Evitar paginas mayores al total
 if ($totalPaginas > 0 && $pagina > $totalPaginas) {
     $pagina = $totalPaginas;
 }
 
-// Calcular desde qué registro comenzar
+// se calcula desde cual registro se empieza
 $offset = ($pagina - 1) * $porPagina;
 
-// Obtener los equipos de la página actual
+// Obtener los equipos con paginacion
 $consulta = $conexion->prepare(
     "SELECT
         e.id,
@@ -119,6 +116,12 @@ $equipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 <div class="container py-5">
 
     <h2 class="mb-4">Gestión de Equipos</h2>
+    
+     <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
+        <a href="crear_equipo.php" class="btn btn-success mb-3">
+            Crear Equipo
+        </a>
+    <?php endif; ?>
 
 <form method="GET" action="equipos.php" class="mb-4">
 
@@ -175,30 +178,30 @@ $equipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
     </table>
 
-<?php if ($totalPaginas > 1): ?>
+    <?php if ($totalPaginas > 1): ?>
 
-    <nav aria-label="Paginación de equipos">
-        <ul class="pagination">
+        <nav aria-label="Paginación de equipos">
+            <ul class="pagination">
 
-            <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+                <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
 
-                <li class="page-item <?= $pagina == $i ? 'active' : '' ?>">
+                    <li class="page-item <?= $pagina == $i ? 'active' : '' ?>">
 
-                    <a
-                        class="page-link"
-                        href="?pagina=<?= $i ?>&buscar=<?= urlencode($buscar) ?>"
-                    >
-                        <?= $i ?>
-                    </a>
+                        <a
+                            class="page-link"
+                            href="?pagina=<?= $i ?>&buscar=<?= urlencode($buscar) ?>"
+                        >
+                            <?= $i ?>
+                        </a>
 
-                </li>
+                    </li>
 
-            <?php endfor; ?>
+                <?php endfor; ?>
 
-        </ul>
-    </nav>
+            </ul>
+        </nav>
 
-<?php endif; ?>
+    <?php endif; ?>
 
 
     <a href="dashboard.php" class="btn btn-secondary">
