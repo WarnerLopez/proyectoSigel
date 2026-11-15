@@ -46,3 +46,31 @@ INSERT INTO usuarios (
     1,
     (SELECT id FROM categorias WHERE nombre = 'Computadoras')
 );
+
+
+
+INSERT INTO equipos
+(categoria_id, nombre, codigo, descripcion, estado)
+VALUES
+(
+    (SELECT id FROM categorias WHERE nombre = 'Computadoras' AND eliminado = 0 LIMIT 1),
+    'Laptop Dell',
+    'EQ-001',
+    'Computadora portátil para préstamo',
+    'disponible'
+),
+(
+    (SELECT id FROM categorias WHERE nombre = 'Proyectores' AND eliminado = 0 LIMIT 1),
+    'Proyector Epson',
+    'EQ-002',
+    'Proyector para presentaciones',
+    'disponible'
+),
+(
+    (SELECT id FROM categorias WHERE nombre = 'Cámaras' AND eliminado = 0 LIMIT 1),
+    'Cámara Canon',
+    'EQ-003',
+    'Cámara para actividades académicas',
+    'disponible'
+);
+

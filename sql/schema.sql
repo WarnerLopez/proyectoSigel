@@ -16,6 +16,26 @@ CREATE TABLE IF NOT EXISTS categorias (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+
+CREATE TABLE equipos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    categoria_id INT UNSIGNED NOT NULL,
+    nombre VARCHAR(120) NOT NULL,
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    descripcion TEXT NULL,
+    estado ENUM('disponible', 'mantenimiento', 'fuera_servicio')
+        NOT NULL DEFAULT 'disponible',
+    eliminado TINYINT(1) NOT NULL DEFAULT 0,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_equipos_categoria
+        FOREIGN KEY (categoria_id)
+        REFERENCES categorias(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
+
+
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     rol_id INT UNSIGNED NOT NULL,
