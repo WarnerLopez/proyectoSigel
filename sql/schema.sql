@@ -57,3 +57,61 @@ CREATE TABLE IF NOT EXISTS usuarios (
         FOREIGN KEY (categoria_id)
         REFERENCES categorias(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+CREATE TABLE prestamos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    usuario_id INT UNSIGNED NOT NULL,
+
+    fecha_inicio DATETIME NOT NULL,
+
+    fecha_fin_prevista DATETIME NOT NULL,
+
+    estado ENUM(
+        'solicitado',
+        'aprobado',
+        'entregado',
+        'devuelto',
+        'cancelado'
+    ) NOT NULL DEFAULT 'solicitado',
+
+    observaciones TEXT NULL,
+
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_prestamos_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT chk_fechas_prestamo
+        CHECK (fecha_fin_prevista > fecha_inicio)
+);
+
+
+CREATE TABLE prestamo_equipos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    prestamo_id INT UNSIGNED NOT NULL,
+
+    equipo_id INT UNSIGNED NOT NULL,
+
+    CONSTRAINT fk_prestamo_equipos_prestamo
+        FOREIGN KEY (prestamo_id)
+        REFERENCES prestamos(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_prestamo_equipos_equipo
+        FOREIGN KEY (equipo_id)
+        REFERENCES equipos(id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT uq_prestamo_equipo
+        UNIQUE (prestamo_id, equipo_id)
+);
+

@@ -41,7 +41,20 @@ if (!isset($_SESSION['usuario_id'])) {
             <a class="nav-link" href="categorias.php">Categorías</a>
 
           <?php endif; ?>
-          <a class="nav-link" href="#">Equipos</a>
+
+           <?php if ($_SESSION['rol_id'] == 1): ?>
+
+            <a class="nav-link" href="equipos.php">Equipos</a>
+
+          <?php endif; ?>
+          
+          <?php if (in_array((int) $_SESSION['rol_id'], [1, 2], true)): ?>
+
+              <a class="nav-link" href="prestamo.php">
+                  Préstamos
+              </a>
+
+          <?php endif; ?>
           
           <form action="../actions/logout.php" method="POST">
               <button type="submit" class="btn btn-outline-danger">
