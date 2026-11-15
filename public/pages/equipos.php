@@ -6,6 +6,9 @@ if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
     exit;
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -116,7 +119,7 @@ $equipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 <div class="container py-5">
 
     <h2 class="mb-4">Gestión de Equipos</h2>
-    
+
      <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
         <a href="crear_equipo.php" class="btn btn-success mb-3">
             Crear Equipo
@@ -157,6 +160,7 @@ $equipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Estado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
 
@@ -172,6 +176,46 @@ $equipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                     <td><?= htmlspecialchars($equipo['categoria']) ?></td>
 
                     <td><?= htmlspecialchars($equipo['estado']) ?></td>
+
+                    <td>
+                        <?php if (isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1): ?>
+
+                            <a
+                                href="editar_equipo.php?id=<?= (int) $equipo['id'] ?>"
+                                class="btn btn-warning btn-sm"
+                            >
+                                Editar
+                            </a>
+
+                        <?php endif; ?>
+
+                        <form
+                            action="../actions/eliminar_equipo.php"
+                            method="POST"
+                            class="d-inline"
+                            onsubmit="return confirm('¿Está seguro de eliminar este equipo?');"
+                        >
+                            <input
+                                type="hidden"
+                                name="id"
+                                value="<?= (int) $equipo['id'] ?>"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"
+                            >
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Eliminar
+                            </button>
+                        </form>
+                       
+                    </td>
+                    
+
+                    
                 </tr>
             <?php endforeach; ?>
         </tbody>
