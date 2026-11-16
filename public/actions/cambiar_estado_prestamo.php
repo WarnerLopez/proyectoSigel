@@ -125,6 +125,37 @@ try {
     )) {
         throw new Exception('Cambio de estado no permitido');
     }
+    
+    // no se pueden entregar componentes wue esten en matenimiento o fuera de servicio
+if (in_array($nuevoEstado, ['aprobado', 'entregado'], true)) {
+
+    $consultaDisponibilidad = $conexion->prepare(
+        "SELECT COUNT(*)
+         FROM prestamo_equipos pe
+         INNER JOIN equipos e ON e.id = pe.equipo_id
+         INNER JOIN categorias c ON c.id = e.categoria_id
+         WHERE pe.prestamo_id = :prestamo_id
+           AND (
+               e.estado <> 'disponible'
+               OR e.eliminado <> 0
+               OR c.eliminado <> 0
+           )"
+    );
+
+    $consultaDisponibilidad->execute([
+        'prestamo_id' => $prestamoId
+    ]);
+
+    $equiposNoDisponibles = (int) $consultaDisponibilidad->fetchColumn();
+
+    if ($equiposNoDisponibles > 0) {
+        throw new Exception(
+            'No se puede aprobar o entregar: uno de los equipos no está disponible'
+        );
+    }
+}
+
+
 
     // Actualizar el estado del préstamo
     $consulta = $conexion->prepare(

@@ -77,14 +77,36 @@ $totalPaginas = (int) ceil($totalUsuarios / $porPagina);
     <link rel="stylesheet" href="../css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container text-center">
-        <form method="GET" action="usuarios.php">
-    <input type="text" name="buscar" placeholder="Buscar usuario">
 
-    <button type="submit">
-        Buscar
-    </button>
-</form>
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Gestión de Usuarios</h2>
+
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-4 flex-wrap">
+
+        <form method="GET"
+              action="usuarios.php"
+              class="d-flex gap-2 flex-grow-1">
+
+            <input
+                type="text"
+                name="buscar"
+                class="form-control"
+                placeholder="Buscar por nombre o correo"
+                value="<?= htmlspecialchars($buscar ?? '') ?>"
+            >
+
+            <button type="submit" class="btn btn-primary">
+                Buscar
+            </button>
+
+        </form>
+
+        <a href="register_usuarios.php" class="btn btn-success">
+             Crear Usuario
+        </a>
+
+    </div>
     <table class="table table-striped">
        <thead>
         <tr>

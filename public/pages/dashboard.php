@@ -55,6 +55,13 @@ if (!isset($_SESSION['usuario_id'])) {
               </a>
 
           <?php endif; ?>
+
+
+          <?php if ((int) ($_SESSION['rol_id'] ?? 0) === 1): ?>
+              <a href="reportes.php" class="nav-link">
+                  Ver Reportes
+              </a>
+          <?php endif; ?>
           
           <form action="../actions/logout.php" method="POST">
               <button type="submit" class="btn btn-outline-danger">
