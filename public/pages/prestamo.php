@@ -6,6 +6,9 @@ if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
     exit;
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once __DIR__ . '/../../config/database.php';
 
@@ -37,7 +40,7 @@ $sql = "SELECT
 
 $parametros = [];
 
-// El operador solo puede consultar préstamos de su categoría
+// El operador solo puede consultar prestamos de su categoria
 if ($rolId === 2) {
 
     if (!$categoriaId) {
@@ -138,26 +141,65 @@ $prestamos = $consulta->fetchAll(PDO::FETCH_ASSOC);
                             <?= htmlspecialchars($prestamo['estado']) ?>
                         </td>
 
+                       
                         <td>
-                            <?php if ($prestamo['estado'] === 'solicitado'): ?>
-                                <span class="text-secondary">
-                                    Pendiente de aprobación
-                                </span>
+                            <?php
+                            $acciones = [];
 
-                            <?php elseif ($prestamo['estado'] === 'aprobado'): ?>
-                                <span class="text-primary">
-                                    Pendiente de entrega
-                                </span>
+                            if ($prestamo['estado'] === 'solicitado') {
+                                $acciones = [
+                                    'aprobado' => 'Aprobar',
+                                    'cancelado' => 'Cancelar'
+                                ];
+                            } elseif ($prestamo['estado'] === 'aprobado') {
+                                $acciones = [
+                                    'entregado' => 'Entregar',
+                                    'cancelado' => 'Cancelar'
+                                ];
+                            } elseif ($prestamo['estado'] === 'entregado') {
+                                $acciones = [
+                                    'devuelto' => 'Devolver'
+                                ];
+                            }
+                            ?>
 
-                            <?php elseif ($prestamo['estado'] === 'entregado'): ?>
-                                <span class="text-warning">
-                                    Pendiente de devolución
-                                </span>
+                            <?php foreach ($acciones as $nuevoEstado => $texto): ?>
 
-                            <?php else: ?>
-                                <span class="text-muted">
-                                    Préstamo finalizado
-                                </span>
+                                <form
+                                    action="../actions/cambiar_estado_prestamo.php"
+                                    method="POST"
+                                    class="d-inline"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="prestamo_id"
+                                        value="<?= (int) $prestamo['id'] ?>"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="estado"
+                                        value="<?= htmlspecialchars($nuevoEstado) ?>"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="csrf_token"
+                                        value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-sm <?= $nuevoEstado === 'cancelado' ? 'btn-danger' : 'btn-primary' ?>"
+                                    >
+                                        <?= htmlspecialchars($texto) ?>
+                                    </button>
+                                </form>
+
+                            <?php endforeach; ?>
+
+                            <?php if (empty($acciones)): ?>
+                                <span class="text-muted">Finalizado</span>
                             <?php endif; ?>
                         </td>
 

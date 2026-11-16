@@ -2,13 +2,11 @@
 <?php
 session_start();
 
-// Verificar que el usuario inició sesión
 if (!isset($_SESSION['usuario_id'])) {
     header('Location: ../index.php');
     exit;
 }
 
-// Permitir únicamente administrador y operador
 $rolId = (int) ($_SESSION['rol_id'] ?? 0);
 
 if (!in_array($rolId, [1, 2], true)) {
@@ -50,7 +48,7 @@ if (!is_array($equipos) || count($equipos) === 0) {
     exit('Debe seleccionar al menos un equipo');
 }
 
-// Validar los identificadores de equipos
+// Validar los equipos indetificados
 $equiposValidados = [];
 
 foreach ($equipos as $equipoId) {
@@ -91,7 +89,7 @@ if ($fin <= $inicio) {
     exit('La fecha de devolución debe ser posterior a la de inicio');
 }
 
-// Validar que el operador tenga categoría asignada
+// Validar que el operador tenga categoraa asignada
 if ($rolId === 2 && !$categoriaId) {
     http_response_code(403);
     exit('El operador no tiene una categoría asignada');
@@ -99,10 +97,10 @@ if ($rolId === 2 && !$categoriaId) {
 
 
 try {
-    // Iniciar una transacción
+    // Iniciar una transaccion
     $conexion->beginTransaction();
 
-    // Bloquear los equipos seleccionados mientras se registra el préstamo
+    // Bloquear los equipos seleccionados mientras se registra el prestamo
     sort($equiposValidados, SORT_NUMERIC);
 
     $consultaEquipo = $conexion->prepare(
@@ -167,7 +165,7 @@ try {
         }
     }
 
-    // Registrar el préstamo
+    // Registrar el prestamo
     $consulta = $conexion->prepare(
         "INSERT INTO prestamos
             (usuario_id, fecha_inicio, fecha_fin_prevista,
@@ -184,10 +182,10 @@ try {
         'observaciones' => $observaciones
     ]);
 
-    // Obtener el ID del préstamo recién creado
+    // Obtener el ID del prestamo recien creado
     $prestamoId = $conexion->lastInsertId();
 
-    // Relacionar los equipos con el préstamo
+    // Relacionar los equipos con el prestamo
     $consultaDetalle = $conexion->prepare(
         "INSERT INTO prestamo_equipos
             (prestamo_id, equipo_id)
@@ -210,7 +208,7 @@ try {
 
 } catch (Exception $e) {
 
-    // Deshacer los cambios si ocurre un error
+    // quita los cambios si ocurre un error
     if ($conexion->inTransaction()) {
         $conexion->rollBack();
     }
